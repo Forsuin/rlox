@@ -1,6 +1,7 @@
 use crate::tokens::OpCode;
 use crate::values::Value;
 
+#[derive(Debug)]
 pub struct Chunk {
     code: Vec<OpCode>,
     constants: Vec<Value>,
