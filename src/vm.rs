@@ -1,7 +1,9 @@
 use crate::chunk::Chunk;
-use crate::debug::disassemble_instruction;
 use crate::tokens::OpCode;
 use crate::values::{print_value, Value};
+
+#[cfg(feature = "trace-execution")]
+use crate::debug::disassemble_instruction;
 
 pub enum InterpretResult {
     OK,
@@ -31,28 +33,27 @@ impl<'vm> VM<'vm> {
     }
 
     fn run(&mut self) -> InterpretResult {
-        let instruction;
+        let mut instruction;
 
         let chunk = self.chunk.expect("Missing chunk");
 
-        #[cfg(feature = "trace-execution")]
-        {
-            print!("          ");
+        loop {
+            #[cfg(feature = "trace-execution")]
+            {
+                print!("          ");
 
-            for value in self.stack.iter() {
-                print!("[ ");
-                print_value(value);
-                print!(" ]");
+                for value in self.stack.iter() {
+                    print!("[ ");
+                    print_value(value);
+                    print!(" ]");
+                }
+
+                print!("\n");
+
+                disassemble_instruction(chunk, self.ip);
+
             }
 
-            print!("\n");
-
-            disassemble_instruction(chunk, self.ip);
-
-        }
-
-
-        loop {
             instruction = chunk.get(self.ip);
             self.ip += 1;
 
@@ -60,10 +61,14 @@ impl<'vm> VM<'vm> {
                 OpCode::CONSTANT { idx } => {
                     let constant = chunk.get_constant(*idx);
                     self.push(*constant);
-                    break;
+                },
+                OpCode::NEGATE => {
+                    let neg_val = -self.pop();
+                    self.push(neg_val);
                 }
                 OpCode::RETURN => {
-                    print_value(&self.pop());
+                    let val = self.pop();
+                    print_value(&val);
                     print!("\n");
                     return InterpretResult::OK;
                 }

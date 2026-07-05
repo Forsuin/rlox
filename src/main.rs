@@ -11,7 +11,9 @@ fn main() {
     let constant = chunk.add_constant(1.2);
     
     chunk.push(OpCode::CONSTANT {idx: constant}, 123);
-    
+    chunk.push(OpCode::NEGATE, 123);
+
+
     chunk.push(OpCode::RETURN, 123);
     disassemble_chunk(&chunk, "test chunk");
 
