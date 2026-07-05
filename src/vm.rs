@@ -74,8 +74,6 @@ impl<'vm> VM<'vm> {
                 }
             }
         }
-
-        InterpretResult::RuntimeError
     }
 
     fn push(&mut self, value: Value) {
