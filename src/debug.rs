@@ -27,6 +27,10 @@ pub fn disassemble_instruction(chunk: &Chunk, offset: usize) -> usize {
         OpCode::CONSTANT {idx} => {
             constant_instruction("OP_CONSTANT", chunk, offset, *idx)
         }
+        OpCode::ADD => {simple_instruction("OP_ADD", offset)}
+        OpCode::SUBTRACT => {simple_instruction("OP_SUBTRACT", offset)}
+        OpCode::MULTIPLY => {simple_instruction("OP_MULTIPLY", offset)}
+        OpCode::DIVIDE => {simple_instruction("OP_DIVIDE", offset)}
         OpCode::NEGATE => {
             simple_instruction("OP_NEGATE", offset)
         }

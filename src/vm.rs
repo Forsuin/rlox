@@ -62,14 +62,17 @@ impl<'vm> VM<'vm> {
                     let constant = chunk.get_constant(*idx);
                     self.push(*constant);
                 },
+                OpCode::ADD => {self.binary_op(|a, b| a + b)}
+                OpCode::SUBTRACT => {self.binary_op(|a, b| a - b)}
+                OpCode::MULTIPLY => {self.binary_op(|a, b| a * b)}
+                OpCode::DIVIDE => {self.binary_op(|a, b| a / b)}
                 OpCode::NEGATE => {
-                    let neg_val = -self.pop();
-                    self.push(neg_val);
+                    self.stack.last_mut().map(|val| -*val);
                 }
                 OpCode::RETURN => {
                     let val = self.pop();
                     print_value(&val);
-                    print!("\n");
+                    println!();
                     return InterpretResult::OK;
                 }
             }
@@ -82,5 +85,11 @@ impl<'vm> VM<'vm> {
 
     fn pop(&mut self) -> Value {
         self.stack.pop().expect("VM stack should not be empty")
+    }
+
+    fn binary_op(&mut self, op: fn(Value, Value) -> Value) {
+        let b = self.pop();
+        let a = self.pop();
+        self.push(op(a, b));
     }
 }
